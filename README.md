@@ -95,3 +95,162 @@ data class Post(
     val title: String,
     val body: String
 )
+---
+
+## 🧩 Ejercicio 2: Probador de APIs REST
+
+### 📝 Descripción
+
+Este ejercicio consiste en desarrollar una aplicación Android que permita **consumir distintos endpoints de una API REST** y visualizar sus respuestas en pantalla.  
+El objetivo es aprender a manejar múltiples solicitudes HTTP, organizar el código correctamente y controlar los estados de carga y error.
+
+Este tipo de aplicación se usa en proyectos reales como:
+- Herramientas internas de prueba de APIs
+- Apps educativas
+- Dashboards de desarrollo
+
+---
+
+### 🔧 Tecnologías utilizadas
+
+- **Kotlin** – Lenguaje principal de desarrollo
+- **Retrofit** – Consumo de servicios REST
+- **Corrutinas** – Manejo de procesos asíncronos
+- **MVVM** – Arquitectura de la aplicación
+- **Gson** – Conversión de JSON a objetos
+- **JSONPlaceholder** – API REST de prueba
+
+---
+
+### 📱 Funcionalidades
+
+- Consumo de los siguientes endpoints:
+  - `/posts`
+  - `/users`
+  - `/comments`
+- Mostrar datos en listas
+- Manejar estados de:
+  - Cargando
+  - Éxito
+  - Error
+- Separación clara de responsabilidades
+
+---
+
+### 🧱 Ejemplo de interfaz Retrofit
+
+```kotlin
+interface ApiService {
+
+    @GET("posts")
+    suspend fun getPosts(): List<Post>
+
+    @GET("users")
+    suspend fun getUsers(): List<User>
+
+    @GET("comments")
+    suspend fun getComments(): List<Comment>
+}
+---
+
+## 🧩 Ejercicio 3: Proyecto académico con arquitectura MVVM
+
+### 📝 Descripción
+
+En este ejercicio se desarrolla una aplicación Android aplicando correctamente la **arquitectura MVVM (Model – View – ViewModel)**, uno de los patrones más utilizados en el desarrollo Android moderno.
+
+El objetivo principal es **separar la lógica de negocio de la interfaz de usuario**, permitiendo que la aplicación sea más mantenible, escalable y fácil de probar.
+
+Este ejercicio refuerza conceptos clave vistos en el código del proyecto, como:
+- Organización por capas
+- Manejo del ciclo de vida
+- Observación de datos reactivos
+
+---
+
+### 🔧 Tecnologías utilizadas
+
+- **Kotlin**
+- **Arquitectura MVVM**
+- **ViewModel**
+- **LiveData**
+- **Corrutinas**
+- **Retrofit**
+- **Dagger Hilt**
+
+---
+
+### 📱 Funcionalidades implementadas
+
+- Obtención de datos desde una API REST
+- Manejo de la lógica de negocio desde el ViewModel
+- Observación de datos con LiveData
+- Comunicación limpia entre capas
+- Inyección de dependencias con Dagger Hilt
+
+---
+
+### 🧠 Ejemplo de ViewModel
+
+```kotlin
+@HiltViewModel
+class PostViewModel @Inject constructor(
+    private val repository: PostRepository
+) : ViewModel() {
+
+    val posts = liveData {
+        emit(repository.getPosts())
+    }
+}
+## 🧩 Ejercicio 4: Base para aplicación Android real
+
+### 📝 Descripción
+
+En este ejercicio se construye una **base sólida y reutilizable** para el desarrollo de aplicaciones Android reales, aplicando una arquitectura moderna y buenas prácticas de desarrollo de software.
+
+El objetivo es crear una estructura inicial que pueda servir como **plantilla base** para futuros proyectos, permitiendo escalar la aplicación sin perder orden, rendimiento ni mantenibilidad.
+
+---
+
+### 🔧 Tecnologías utilizadas
+
+- **Kotlin**
+- **Retrofit**
+- **Corrutinas**
+- **Arquitectura MVVM**
+- **Dagger Hilt**
+- **JSONPlaceholder** (API de pruebas)
+
+---
+
+### 📱 Funcionalidades implementadas
+
+- Estructura del proyecto organizada por capas
+- Separación clara de responsabilidades
+- Acceso centralizado a datos mediante Repository
+- Comunicación con API REST
+- Base lista para proyectos reales y comerciales
+
+---
+
+### 🧱 Ejemplo de Repository
+
+```kotlin
+class PostRepository @Inject constructor(
+    private val api: ApiService
+) {
+
+    suspend fun getPosts() = api.getPosts()
+
+}
+## 🧠 Conclusión
+
+El desarrollo de aplicaciones Android modernas requiere mucho más que solo hacer que la app funcione. A lo largo de estos ejercicios prácticos se demuestra la importancia de aplicar **buenas prácticas de arquitectura**, manejo correcto del ciclo de vida y uso de herramientas estándar de la industria.
+
+El uso de **Retrofit** para el consumo de APIs REST, junto con **corrutinas de Kotlin**, permite crear aplicaciones eficientes y responsivas. La implementación de la arquitectura **MVVM** garantiza una correcta separación de responsabilidades, facilitando el mantenimiento, las pruebas y la escalabilidad del proyecto.
+
+Además, la integración de **Dagger Hilt** para la inyección de dependencias reduce el acoplamiento entre clases y mejora la organización del código, acercando el proyecto a un nivel profesional utilizado en entornos laborales reales.
+
+Finalmente, el uso de **JSONPlaceholder** como API de prueba permite enfocarse en el aprendizaje sin la necesidad de desarrollar un backend propio, convirtiendo estos ejercicios en una base sólida para proyectos académicos, portafolios personales y futuras aplicaciones reales.
+
+En conclusión, este enfoque no solo enseña a consumir APIs en Android, sino que proporciona una **estructura reutilizable, escalable y alineada con los estándares actuales del desarrollo Android**.
