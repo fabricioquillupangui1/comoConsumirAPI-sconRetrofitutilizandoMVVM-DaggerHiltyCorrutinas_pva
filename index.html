@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cómo consumir APIs con Retrofit, MVVM y Corrutinas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ========================= -->
+    <!-- ESTILOS (DISEÑO TIPO FIGMA) -->
+    <!-- ========================= -->
+    <style>
+        :root {
+            --primary: #1DB954;
+            --secondary: #0F172A;
+            --background: #F8FAFC;
+            --card: #FFFFFF;
+            --text: #1E293B;
+            --muted: #64748B;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1DB954, #16A34A);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            max-width: 900px;
+            margin: auto;
+            font-size: 2.2rem;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        section {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--secondary);
+            border-left: 6px solid var(--primary);
+            padding-left: 12px;
+        }
+
+        h3 {
+            margin-top: 30px;
+            color: #15803D;
+        }
+
+        p {
+            color: var(--text);
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .highlight {
+            background: #ECFDF5;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table thead {
+            background-color: #F1F5F9;
+        }
+
+        table th, table td {
+            padding: 14px;
+            border-bottom: 1px solid #E2E8F0;
+            text-align: left;
+        }
+
+        table th {
+            color: #0F172A;
+        }
+
+        .exercise {
+            background: #F0FDF4;
+            border: 1px solid #BBF7D0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+        }
+
+        iframe {
+            max-width: 100%;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Cómo consumir APIs con Retrofit utilizando MVVM, Dagger Hilt y Corrutinas</h1>
+</header>
+
+<main>
+
+    <!-- ========================= -->
+    <!-- CAPTURA -->
+    <!-- ========================= -->
+    <section>
+        <h2>Vista general del proyecto</h2>
+        <p>
+            Antes de comenzar, es importante visualizar el resultado final de una aplicación Android
+            que consume una API REST de forma profesional.
+        </p>
+
+        <!-- AQUÍ COLOCA TU CAPTURA -->
+        <!-- <img src="captura.png" alt="Captura del proyecto Android"> -->
+    </section>
+
+    <!-- ========================= -->
+    <!-- INTRODUCCIÓN -->
+    <!-- ========================= -->
+    <section>
+        <h2>Introducción</h2>
+        <p>
+            El desarrollo Android moderno requiere una correcta organización del código, manejo eficiente
+            de procesos en segundo plano y una arquitectura que permita escalar aplicaciones sin perder
+            calidad ni mantenibilidad.
+        </p>
+
+        <p>
+            En esta guía aprenderás cómo consumir APIs REST utilizando Retrofit y corrutinas de Kotlin,
+            aplicando la arquitectura MVVM y la inyección de dependencias con Dagger Hilt.
+        </p>
+
+        <div class="highlight">
+            Este enfoque es el estándar actual en proyectos profesionales de Android.
+        </div>
+    </section>
+
+    <!-- ========================= -->
+    <!-- CONCEPTOS CLAVE -->
+    <!-- ========================= -->
+    <section>
+        <h2>Conceptos fundamentales</h2>
+
+        <h3>Consumo de APIs REST</h3>
+        <p>
+            Una API REST permite que una aplicación Android obtenga datos desde un servidor remoto.
+            Retrofit simplifica este proceso al encargarse de la comunicación HTTP y la conversión
+            automática de datos JSON a objetos Kotlin.
+        </p>
+
+        <h3>Modelado de datos</h3>
+        <p>
+            Los datos recibidos desde una API deben representarse mediante <strong>data class</strong>
+            que reflejen exactamente la estructura del JSON.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Campo</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>userId</td>
+                    <td>Int</td>
+                    <td>Identificador del usuario</td>
+                </tr>
+                <tr>
+                    <td>id</td>
+                    <td>Int</td>
+                    <td>Identificador del recurso</td>
+                </tr>
+                <tr>
+                    <td>title</td>
+                    <td>String</td>
+                    <td>Título del contenido</td>
+                </tr>
+                <tr>
+                    <td>body</td>
+                    <td>String</td>
+                    <td>Contenido principal</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Corrutinas y ciclo de vida</h3>
+        <p>
+            Las corrutinas permiten ejecutar tareas pesadas sin bloquear la interfaz de usuario,
+            respetando el ciclo de vida de la aplicación.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Scope</th>
+                    <th>Uso principal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>lifecycleScope</td>
+                    <td>Ejecución segura ligada a la vista</td>
+                </tr>
+                <tr>
+                    <td>viewModelScope</td>
+                    <td>Lógica de negocio en ViewModel</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ========================= -->
+    <!-- ARQUITECTURA MVVM -->
+    <!-- ========================= -->
+    <section>
+        <h2>Arquitectura MVVM</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Capa</th>
+                    <th>Responsabilidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Model</td>
+                    <td>Representa los datos</td>
+                </tr>
+                <tr>
+                    <td>Repository</td>
+                    <td>Gestiona el acceso a datos</td>
+                </tr>
+                <tr>
+                    <td>ViewModel</td>
+                    <td>Contiene la lógica de la UI</td>
+                </tr>
+                <tr>
+                    <td>View</td>
+                    <td>Muestra la información al usuario</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- EJERCICIOS -->
+    <section>
+        <h2>Ejercicios prácticos</h2>
+
+        <!-- EJERCICIO 1 -->
+        <div class="exercise">
+            <h3>Ejercicio 1: App de publicaciones</h3>
+
+            <p><strong>Descripción:</strong></p>
+            <p>
+                Desarrollo de una aplicación Android que consume publicaciones desde una API REST
+                y las muestra en una lista, aplicando MVVM y corrutinas.
+            </p>
+
+            <p><strong>Tecnologías:</strong></p>
+            <ul>
+                <li>Kotlin</li>
+                <li>Retrofit</li>
+                <li>Corrutinas</li>
+                <li>MVVM</li>
+                <li>JSONPlaceholder</li>
+            </ul>
+
+            <p><strong>Funcionalidades:</strong></p>
+            <ul>
+                <li>Obtener datos desde <code>/posts</code></li>
+                <li>Mostrar título y contenido</li>
+                <li>Contar número de publicaciones</li>
+            </ul>
+
+            <p><strong>Ejemplo de modelo Kotlin:</strong></p>
+            <pre>
+data class Post(
+    val userId: Int,
+    val id: Int,
+    val title: String,
+    val body: String
+)
+            </pre>
+        </div>
+
+        <!-- EJERCICIO 2 -->
+        <div class="exercise">
+            <h3>Ejercicio 2: Probador de APIs</h3>
+
+            <p><strong>Descripción:</strong></p>
+            <p>
+                Aplicación educativa que permite consumir distintos endpoints REST para analizar
+                respuestas, errores y estados de carga.
+            </p>
+
+            <p><strong>Tecnologías:</strong></p>
+            <ul>
+                <li>Kotlin</li>
+                <li>Retrofit</li>
+                <li>Corrutinas</li>
+                <li>MVVM</li>
+            </ul>
+
+            <p><strong>Funcionalidades:</strong></p>
+            <ul>
+                <li>Consumo de <code>/posts</code>, <code>/users</code>, <code>/comments</code></li>
+                <li>Manejo de errores HTTP</li>
+                <li>Estados de carga</li>
+            </ul>
+
+            <p><strong>Ejemplo de interfaz Retrofit:</strong></p>
+            <pre>
+interface ApiService {
+
+    @GET("posts")
+    suspend fun getPosts(): List<Post>
+
+    @GET("users")
+    suspend fun getUsers(): List<User>
+}
+            </pre>
+        </div>
+
+        <!-- EJERCICIO 3 -->
+        <div class="exercise">
+            <h3>Ejercicio 3: Proyecto académico MVVM</h3>
+
+            <p><strong>Descripción:</strong></p>
+            <p>
+                Proyecto enfocado en demostrar una correcta implementación de MVVM,
+                separando claramente cada capa de la aplicación.
+            </p>
+
+            <p><strong>Tecnologías:</strong></p>
+            <ul>
+                <li>Kotlin</li>
+                <li>MVVM</li>
+                <li>LiveData</li>
+                <li>Dagger Hilt</li>
+            </ul>
+
+            <p><strong>Ejemplo de ViewModel:</strong></p>
+            <pre>
+@HiltViewModel
+class PostViewModel @Inject constructor(
+    private val repository: PostRepository
+) : ViewModel() {
+
+    val posts = liveData {
+        emit(repository.getPosts())
+    }
+}
+            </pre>
+        </div>
+
+        <!-- EJERCICIO 4 -->
+        <div class="exercise">
+            <h3>Ejercicio 4: Base para aplicación real</h3>
+
+            <p><strong>Descripción:</strong></p>
+            <p>
+                Construcción de una base sólida reutilizable para futuras aplicaciones comerciales,
+                manteniendo arquitectura limpia y escalabilidad.
+            </p>
+
+            <p><strong>Tecnologías:</strong></p>
+            <ul>
+                <li>Kotlin</li>
+                <li>Retrofit</li>
+                <li>Corrutinas</li>
+                <li>MVVM</li>
+                <li>Dagger Hilt</li>
+            </ul>
+
+            <p><strong>Ejemplo de Repository:</strong></p>
+            <pre>
+class PostRepository @Inject constructor(
+    private val api: ApiService
+) {
+    suspend fun getPosts() = api.getPosts()
+}
+            </pre>
+        </div>
+    </section>
+     <!-- VIDEO -->
+    <section>
+        <h2>Demostración del proyecto</h2>
+        <!--
+        <iframe width="560" height="315"
+            src="https://www.youtube.com/embed/TU_VIDEO"
+            title="Demostración del proyecto"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+        -->
+    </section>
+
+    <div style="max-width: 800px; margin: 20px auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6;">
+    <h1 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Consumir APIs con Retrofit utilizando MVVM, Dagger Hilt y Corrutinas</h1>
+    
+    <p style="color: #666; margin-bottom: 15px;"></p>
+
+    <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius: 12px; box-shadow: 0px 10px 25px rgba(0,0,0,0.15); background-color: #000;">
+        <iframe 
+            src="/preview" 
+            style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <div style="margin-top: 25px; display: flex; gap: 15px; align-items: center;">
+        <a href="https://github.com/fabricioquillupangui1/comoConsumirAPI-sconRetrofitutilizandoMVVM-DaggerHiltyCorrutinas_pva/blob/main/README.md" 
+           target="_blank"
+           style="display: inline-flex; align-items: center; padding: 12px 24px; background-color: #24292e; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: background-color 0.3s;">
+           <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" style="width: 20px; filter: invert(1); margin-right: 10px;" alt="">
+           Ver Readme en GitHub
+        </a>
+        
+    </div>
+</div>
+</main>
+
+<footer>
+    © Guía educativa de desarrollo Android moderno
+</footer>
+
+</body>
+</html>
